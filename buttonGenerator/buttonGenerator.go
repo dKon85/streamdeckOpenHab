@@ -18,7 +18,7 @@ func (*SingleActionButton) Pressed(){
 
 func GenerateButtons( sd *streamdeck.StreamDeck, stopFunc func()){
 	button1 := buttons.NewTextButton("1")
-	button1.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "ONE"})
+	button1.SetActionHandler(&actionHandler.OpenHabAction{button1})
 	sd.AddButton(0, button1)
 
 	button2 := buttons.NewTextButton("2")
