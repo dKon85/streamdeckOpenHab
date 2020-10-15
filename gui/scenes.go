@@ -13,6 +13,8 @@ const (
 	testSceneName = "TestScene"
 	mainSceneName = "MainScene"
 	emptySceneName = "EmptyScene"
+	settingsSceneName = "SettingsScene"
+	sleepSceneName = "SleepScene"
 )
 
 func GetTestScene( sd *streamdeck.StreamDeck, registry *SceneRegistry, stopFunc func()) (*Scene){
@@ -115,7 +117,8 @@ func GetMainScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 	result.AddButton(buttonLivingroom, 3, 1)
 
 	buttonFwd := buttons.NewTextButton(">")
-	buttonFwd.SetActionHandler(&actionHandler.OpenHabAction{TextButton: buttonFwd })
+	// buttonFwd.SetActionHandler(&actionHandler.OpenHabAction{TextButton: buttonFwd })
+	buttonFwd.SetActionHandler(&SceneAction{settingsSceneName, registry, sd})
 	result.AddButton(buttonFwd, 4, 0)
 
 	return &result
@@ -125,6 +128,51 @@ func GetEmptyScene( ) (*Scene) {
 
 	result := Scene{name: emptySceneName}
 	result.init()
+
+	return &result
+}
+
+func GetSettingsScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) {
+	result := Scene{name: settingsSceneName}
+	result.init()
+
+	buttonBwd := buttons.NewTextButton("<")
+	buttonBwd.SetActionHandler(&SceneAction{mainSceneName, registry, sd})
+	result.AddButton(buttonBwd, 0, 0)
+
+	buttonSleep := buttons.NewTextButton("Sleep")
+	thisActionHandler := &actionhandlers.ChainedAction{}
+	thisActionHandler.AddAction(&actionHandler.OpenHabAction{buttonSleep, func(){sd.SetBrightness(0)}})
+	thisActionHandler.AddAction(&SceneAction{sleepSceneName, registry, sd})
+	buttonSleep.SetActionHandler(thisActionHandler)
+	result.AddButton(buttonSleep, 1, 1)
+
+	buttonFwd := buttons.NewTextButton(">")
+	buttonFwd.SetActionHandler(&SceneAction{testSceneName, registry, sd})
+	result.AddButton(buttonFwd, 4, 0)
+
+	return &result
+}
+
+func GetSleepScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) {
+	result := Scene{name: sleepSceneName}
+	result.init()
+
+
+	wakeUpButton := GetEmptyButton()
+
+	thisActionHandler := &actionhandlers.ChainedAction{}
+	thisActionHandler.AddAction(&actionHandler.OpenHabAction{wakeUpButton, func(){sd.SetBrightness(50)}})
+	thisActionHandler.AddAction(&SceneAction{mainSceneName, registry, sd})
+	wakeUpButton.SetActionHandler(thisActionHandler)
+
+	for x := 0; x < Cols; x++ {
+		for y := 0; y < Rows; y++ {
+			result.AddButton(wakeUpButton, x, y)
+		}
+	}
+
+	sd.SetBrightness(0)
 
 	return &result
 }
