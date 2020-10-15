@@ -34,8 +34,8 @@ func GetTestScene( sd *streamdeck.StreamDeck, registry *SceneRegistry, stopFunc 
 	button4.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "FOUR"})
 	result.AddButton( button4,3,0)
 
-	button5 := buttons.NewTextButton("5")
-	button5.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "FIVE"})
+	button5 := buttons.NewTextButton(">")
+	button5.SetActionHandler(&SceneAction{mainSceneName, registry, sd})
 	result.AddButton(button5, 4,0 )
 
 	button6 := buttons.NewTextButton("6")
