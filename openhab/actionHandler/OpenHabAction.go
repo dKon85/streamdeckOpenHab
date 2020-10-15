@@ -9,14 +9,19 @@ import (
 
 type OpenHabAction struct{
 	TextButton *buttons.TextButton
+	Cmd func()
 }
 
 func (action *OpenHabAction) Pressed(btn streamdeck.Button) {
-	com := openhab.OpenHabCommunicator{}
+	if action.Cmd != nil {
+		action.Cmd()
+	} else {
+		com := openhab.OpenHabCommunicator{}
 
-	state, _ := com.GetItemState()
+		state, _ := com.GetItemState()
 
-	action.TextButton.SetText(state)
+		action.TextButton.SetText(state)
+	}
 }
 
 func (action *OpenHabAction) listItems(btn streamdeck.Button) {

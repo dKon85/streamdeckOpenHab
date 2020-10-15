@@ -65,7 +65,7 @@ func (c *Client) sendRequest(req *http.Request, v interface{}) error {
 }
 
 func (c *Client) sendPlainRequest(req *http.Request) (string, error) {
-	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Content-Type", "text/plain; charset=utf-8")
 	req.Header.Set("Accept", "text/plain; charset=utf-8")
 	req.Header.Set("Authorization", c.apiKey)
 
