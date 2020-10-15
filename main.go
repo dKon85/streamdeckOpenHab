@@ -3,7 +3,7 @@ package main
 import (
 	streamdeck "github.com/magicmonkey/go-streamdeck"
 	_ "github.com/magicmonkey/go-streamdeck/devices"
-	"streamdeckOpenHab/buttonGenerator"
+	"streamdeckOpenHab/gui"
 	"time"
 )
 
@@ -28,12 +28,19 @@ func main() {
 
 	sd.SetBrightness(50)
 
+	registry := gui.SceneRegistry{}
 	// A button with text on it which changes when pressed
-	buttonGenerator.GenerateButtons(sd, stop)
+	//buttonGenerator.GenerateButtons(sd, stop)
+	scene := gui.GetTestScene(sd, &registry, stop)
+	registry.Init(scene, gui.GetMainScene(sd, &registry) )
+	scene.Write(*sd)
 
 	for run {
 		time.Sleep( 1 * time.Second )
 	}
+
+	sd.SetBrightness(0)
+	gui.GetEmptyScene().Write(*sd)
 
 	// A button which performs multiple actions when pressed
 	// multiActionButton := buttons.NewColourButton(color.RGBA{255, 0, 255, 255})

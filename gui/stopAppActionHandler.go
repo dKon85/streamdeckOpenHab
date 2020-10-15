@@ -1,4 +1,4 @@
-package actionHandler
+package gui
 
 import (
 	"github.com/magicmonkey/go-streamdeck"

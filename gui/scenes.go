@@ -1,103 +1,117 @@
-package buttonGenerator
+package gui
 
 import (
 	"github.com/magicmonkey/go-streamdeck"
 	"github.com/magicmonkey/go-streamdeck/actionhandlers"
 	"github.com/magicmonkey/go-streamdeck/buttons"
-	"streamdeckOpenHab/actionHandler"
+	"streamdeckOpenHab/openhab/actionHandler"
 	"time"
 )
 
-type SingleActionButton struct{
-	url string
-}
+const (
+	testSceneName = "TestScene"
+	mainSceneName = "MainScene"
+	emptySceneName = "EmptyScene"
+)
 
-func (*SingleActionButton) Pressed(){
-	// OpenHabCom.sendCommand( url )
-}
+func GetTestScene( sd *streamdeck.StreamDeck, registry *SceneRegistry, stopFunc func()) (*Scene){
 
-func GenerateButtons( sd *streamdeck.StreamDeck, stopFunc func()){
+	result := Scene{name: testSceneName}
+
 	button1 := buttons.NewTextButton("1")
 	button1.SetActionHandler(&actionHandler.OpenHabAction{button1})
-	sd.AddButton(0, button1)
+	result.AddButton( button1, 0,0 )
 
 	button2 := buttons.NewTextButton("2")
 	button2.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "TWO"})
-	sd.AddButton(1, button2)
+	result.AddButton( button2, 1,0)
 
 	button3 := buttons.NewTextButton("3")
 	button3.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "THREE"})
-	sd.AddButton(2, button3)
+	result.AddButton(button3, 2, 0)
 
 	button4 := buttons.NewTextButton("4")
 	button4.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "FOUR"})
-	sd.AddButton(3, button4)
+	result.AddButton( button4,3,0)
 
 	button5 := buttons.NewTextButton("5")
 	button5.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "FIVE"})
-	sd.AddButton(4, button5)
+	result.AddButton(button5, 4,0 )
 
 	button6 := buttons.NewTextButton("6")
 	button6.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "SIX"})
-	sd.AddButton(5, button6)
+	result.AddButton(button6, 0,1)
 
 	button7 := buttons.NewTextButton("7")
 	button7.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "SEVEN"})
-	sd.AddButton(6, button7)
+	result.AddButton( button7, 1, 1)
 
 	button8 := buttons.NewTextButton("8")
 	button8.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "EIGHT"})
-	sd.AddButton(7, button8)
+	result.AddButton(button8,2 ,1)
 
 	button9 := buttons.NewTextButton("9")
 	button9.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "NINE"})
-	sd.AddButton(8, button9)
+	result.AddButton(button9, 3,1)
 
-	button10 := buttons.NewTextButton("10")
-	button10.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "TEN"})
-	sd.AddButton(9, button10)
+	button10 := buttons.NewTextButton("NXT")
+	/*custom := actionhandlers.CustomAction{}
+	custom.SetHandler( func(streamdeck.Button) {
+
+		scene := Scene{name: "initScene" }
+		scene.init()
+		scene.Write( *sd )} )*/
+
+	button10.SetActionHandler(&SceneAction{mainSceneName, registry, sd})
+	result.AddButton(button10,4,1)
 
 	button11 := buttons.NewTextButton("11")
 	button11.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "ELEVEN"})
-	sd.AddButton(10, button11)
+	result.AddButton(button11,0,2)
 
 	button12 := buttons.NewTextButton("12")
 	button12.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "TWELVE"})
-	sd.AddButton(11, button12)
+	result.AddButton(button12, 1,2)
 
 	button13 := buttons.NewTextButton("13")
 	button13.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "THIRTEEN"})
-	sd.AddButton(12, button13)
+	result.AddButton(button13,2,2)
 
 	button14 := buttons.NewTextButton("14")
-	button14.SetActionHandler(&actionHandler.StopAppAction{
-		func(){
+	button14.SetActionHandler(&StopAppAction{
+		func() {
 			time.Sleep(5 * time.Second)
-			RemoveButtons(sd)
 			stopFunc()
 		}})
-	sd.AddButton(13, button14)
+	result.AddButton(button14, 3,2)
 
 	button15 := buttons.NewTextButton("15")
-	button15.SetActionHandler(&actionHandler.StopAppAction{stopFunc} )
-	sd.AddButton(14, button15)
+	button15.SetActionHandler(&StopAppAction{stopFunc})
+	result.AddButton(button15, 4,2)
+
+	return &result
 }
 
-func RemoveButtons( sd *streamdeck.StreamDeck ){
-	sd.AddButton(0, buttons.NewTextButton("") )
-	sd.AddButton(1, buttons.NewTextButton(""))
-	sd.AddButton(2, buttons.NewTextButton(""))
-	sd.AddButton(3, buttons.NewTextButton(""))
-	sd.AddButton(4, buttons.NewTextButton(""))
-	sd.AddButton(5, buttons.NewTextButton(""))
-	sd.AddButton(6, buttons.NewTextButton(""))
-	sd.AddButton(7, buttons.NewTextButton(""))
-	sd.AddButton(8, buttons.NewTextButton(""))
-	sd.AddButton(9, buttons.NewTextButton(""))
-	sd.AddButton(10, buttons.NewTextButton(""))
-	sd.AddButton(11, buttons.NewTextButton(""))
-	sd.AddButton(12, buttons.NewTextButton(""))
-	sd.AddButton(13, buttons.NewTextButton(""))
-	sd.AddButton(14, buttons.NewTextButton(""))
-	sd.SetBrightness(0)
+func GetMainScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) {
+
+	result := Scene{name: mainSceneName}
+	result.init()
+
+	buttonBwd := buttons.NewTextButton("<")
+	buttonBwd.SetActionHandler(&SceneAction{testSceneName, registry, sd})
+	result.AddButton(buttonBwd, 0, 0)
+
+	buttonFwd := buttons.NewTextButton(">")
+	buttonFwd.SetActionHandler(&actionHandler.OpenHabAction{buttonFwd})
+	result.AddButton(buttonFwd, 4, 0)
+
+	return &result
+}
+
+func GetEmptyScene( ) (*Scene) {
+
+	result := Scene{name: emptySceneName}
+	result.init()
+
+	return &result
 }
