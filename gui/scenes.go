@@ -15,6 +15,7 @@ const (
 	emptySceneName = "EmptyScene"
 	settingsSceneName = "SettingsScene"
 	sleepSceneName = "SleepScene"
+	tempSceneName = "tempScene"
 )
 
 func GetTestScene( sd *streamdeck.StreamDeck, registry *SceneRegistry, stopFunc func()) (*Scene){
@@ -58,13 +59,6 @@ func GetTestScene( sd *streamdeck.StreamDeck, registry *SceneRegistry, stopFunc 
 	result.AddButton(button9, 3,1)
 
 	button10 := buttons.NewTextButton("NXT")
-	/*custom := actionhandlers.CustomAction{}
-	custom.SetHandler( func(streamdeck.Button) {
-
-		scene := Scene{name: "initScene" }
-		scene.init()
-		scene.Write( *sd )} )*/
-
 	button10.SetActionHandler(&SceneAction{mainSceneName, registry, sd})
 	result.AddButton(button10,4,1)
 
@@ -117,12 +111,70 @@ func GetMainScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 	result.AddButton(buttonLivingroom, 3, 1)
 
 	buttonFwd := buttons.NewTextButton(">")
-	// buttonFwd.SetActionHandler(&actionHandler.OpenHabAction{TextButton: buttonFwd })
-	buttonFwd.SetActionHandler(&SceneAction{settingsSceneName, registry, sd})
+	buttonFwd.SetActionHandler(&SceneAction{tempSceneName, registry, sd})
 	result.AddButton(buttonFwd, 4, 0)
 
 	return &result
 }
+
+
+func GetTempScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) {
+
+	result := Scene{name: tempSceneName}
+	result.init()
+
+	descBathroom := buttons.NewTextButton("Bad")
+	result.AddButton(descBathroom, 0, 0)
+	descKitchen := buttons.NewTextButton("Küche")
+	result.AddButton(descKitchen, 1, 0)
+	descBedroom := buttons.NewTextButton("Schlafzimmer")
+	result.AddButton(descBedroom, 2, 0)
+	descLivingroom := buttons.NewTextButton("Wohnzimmer")
+	result.AddButton(descLivingroom, 3, 0)
+
+	buttonBathroom := buttons.NewTextButton("18°C")
+	buttonBathroom.SetActionHandler(&actionHandler.OpenHabAction{buttonBathroom, func(){openhab.SetTemp( "18.00", "HeaterBathroom")}})
+	result.AddButton(buttonBathroom, 0, 1)
+
+	buttonKitchen := buttons.NewTextButton("18°C")
+	buttonKitchen.SetActionHandler(&actionHandler.OpenHabAction{buttonKitchen, func(){openhab.SetTemp( "18.00", "HeaterKitchen")}})
+	result.AddButton(buttonKitchen, 1, 1)
+
+	buttonBedroom := buttons.NewTextButton("18°C")
+	buttonBedroom.SetActionHandler(&actionHandler.OpenHabAction{buttonKitchen, func(){openhab.SetTemp( "18.00", "HeaterBedroom")}})
+	result.AddButton(buttonBedroom, 2, 1)
+
+	buttonLivingroom := buttons.NewTextButton("18°C")
+	buttonLivingroom.SetActionHandler(&actionHandler.OpenHabAction{buttonKitchen, func(){openhab.SetTemps( "18.00", "HeaterLivingroomDoor", "HeaterLivingroomWindow")}})
+	result.AddButton(buttonLivingroom, 3, 1)
+
+	buttonBathroomHot := buttons.NewTextButton("21°C")
+	buttonBathroomHot.SetActionHandler(&actionHandler.OpenHabAction{buttonKitchen, func(){openhab.SetTemp( "21.00", "HeaterKitchen")}})
+	result.AddButton(buttonBathroomHot, 0, 2)
+
+	buttonKitchenHot := buttons.NewTextButton("21°C")
+	buttonKitchenHot.SetActionHandler(&actionHandler.OpenHabAction{buttonKitchen, func(){openhab.SetTemp( "21.00", "HeaterKitchen")}})
+	result.AddButton(buttonKitchenHot, 1, 2)
+
+	buttonBedroomHot := buttons.NewTextButton("21°C")
+	buttonBedroomHot.SetActionHandler(&actionHandler.OpenHabAction{buttonKitchen, func(){openhab.SetTemp( "21.00", "HeaterBedroom")}})
+	result.AddButton(buttonBedroomHot, 2, 2)
+
+	buttonLivingroomHot := buttons.NewTextButton("21°C")
+	buttonLivingroomHot.SetActionHandler(&actionHandler.OpenHabAction{buttonKitchen, func(){openhab.SetTemps( "21.00", "HeaterLivingroomDoor", "HeaterLivingroomWindow")}})
+	result.AddButton(buttonLivingroomHot, 3, 2)
+
+	buttonFwd := buttons.NewTextButton(">")
+	buttonFwd.SetActionHandler(&SceneAction{settingsSceneName, registry, sd})
+	result.AddButton(buttonFwd, 4, 0)
+
+	buttonBwd := buttons.NewTextButton("<")
+	buttonBwd.SetActionHandler(&SceneAction{testSceneName, registry, sd})
+	result.AddButton(buttonBwd, 4, 2)
+
+	return &result
+}
+
 
 func GetEmptyScene( ) (*Scene) {
 
@@ -132,7 +184,7 @@ func GetEmptyScene( ) (*Scene) {
 	return &result
 }
 
-func GetSettingsScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) {
+func GetSettingsScene( sd *streamdeck.StreamDeck, registry *SceneRegistry, shutdown func()) (*Scene) {
 	result := Scene{name: settingsSceneName}
 	result.init()
 
@@ -146,6 +198,10 @@ func GetSettingsScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Sce
 	thisActionHandler.AddAction(&SceneAction{sleepSceneName, registry, sd})
 	buttonSleep.SetActionHandler(thisActionHandler)
 	result.AddButton(buttonSleep, 1, 1)
+
+	buttonStop := buttons.NewTextButton("Shutdown")
+	buttonStop.SetActionHandler(&StopAppAction{shutdown})
+	result.AddButton(buttonStop, 3,2)
 
 	buttonFwd := buttons.NewTextButton(">")
 	buttonFwd.SetActionHandler(&SceneAction{testSceneName, registry, sd})

@@ -32,7 +32,7 @@ func main() {
 	// A button with text on it which changes when pressed
 	//buttonGenerator.GenerateButtons(sd, stop)
 	scene := gui.GetTestScene(sd, &registry, stop)
-	registry.Init(scene, gui.GetMainScene(sd, &registry), gui.GetSettingsScene(sd, &registry), gui.GetSleepScene(sd, &registry) )
+	registry.Init(scene, gui.GetMainScene(sd, &registry), gui.GetSettingsScene(sd, &registry, stop), gui.GetSleepScene(sd, &registry), gui.GetTempScene(sd, &registry) )
 	scene.Write(*sd)
 
 	for run {

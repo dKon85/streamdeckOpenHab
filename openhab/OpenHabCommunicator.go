@@ -104,18 +104,6 @@ func changeBrightness(itemName string, value string) {
 	c.sendPlainRequest(req)
 }
 
-func ActivateLight( itemName string ){
-	c := NewClient("")
-
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/items/%s", c.BaseURL, itemName), bytes.NewBufferString("30,60,100"))
-	if err != nil {
-		return
-	}
-
-	c.sendPlainRequest(req)
-
-}
-
 func GetLightState( itemName string ) []string{
 	c := NewClient("")
 
@@ -128,4 +116,25 @@ func GetLightState( itemName string ) []string{
 
 	return strings.Split(res, ",")
 
+}
+
+func SetTemp( targetTemp, itemName string ){
+	c := NewClient("")
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/items/%s_4_SetTemperature", c.BaseURL, itemName), bytes.NewBufferString(targetTemp))
+	if err != nil {
+		return
+	}
+
+	c.sendPlainRequest(req)
+}
+
+func SetTemps( targetTemp string, itemNames ... string){
+	if len(itemNames) == 0 {
+		return
+	}
+
+	for _, itemName := range itemNames {
+		SetTemp(targetTemp, itemName)
+	}
 }
