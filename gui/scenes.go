@@ -1,7 +1,6 @@
 package gui
 
 import (
-	"fmt"
 	"github.com/magicmonkey/go-streamdeck"
 	"github.com/magicmonkey/go-streamdeck/actionhandlers"
 	"github.com/magicmonkey/go-streamdeck/buttons"
@@ -51,12 +50,10 @@ func GetTestScene( sd *streamdeck.StreamDeck, registry *SceneRegistry, stopFunc 
 	button7.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "SEVEN"})
 	result.AddButton( button7, 1, 1)
 
-	imgTest, err := buttons.NewImageFileButton("images/bathroomTemp.png")
-	if err != nil {
-		fmt.Printf("Error occurred: ", err)
-	}
-	//imgTest.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "EIGHT"})
+	imgTest, _ := buttons.NewImageFileButton("images/bathroomTemp.png")
 	result.AddButton(imgTest, 2, 1)
+
+	//imgTest.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "EIGHT"})
 
 	/*button8 := buttons.NewTextButton("8")
 	button8.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "EIGHT"})
@@ -106,15 +103,15 @@ func GetMainScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 	buttonBwd.SetActionHandler(&SceneAction{testSceneName, registry, sd})
 	result.AddButton(buttonBwd, 0, 0)
 
-	buttonKitchen := buttons.NewTextButton("Küche")
+	buttonKitchen, _ := buttons.NewImageFileButton("images/kitchenLight.png")
 	buttonKitchen.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.ToggleLight("LightKitchen_Color")}})
 	result.AddButton(buttonKitchen, 1, 1)
 
-	buttonBedroom := buttons.NewTextButton("Schlafzimmer")
+	buttonBedroom, _ := buttons.NewImageFileButton("images/bedroomLight.png")
 	buttonBedroom.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.ToggleLight("LightBedRoom_Color")}})
 	result.AddButton(buttonBedroom, 2, 1)
 
-	buttonLivingroom := buttons.NewTextButton("Wohnzimmer")
+	buttonLivingroom, _ := buttons.NewImageFileButton("images/livingroomLight.png")
 	buttonLivingroom.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.ToggleLights("LightLivingRoom_Color", "LightPlayLivingroomDoor_Color", "LightPlayLivingroomWindow_Color", "LightstripBedroom_Color")}})
 	result.AddButton(buttonLivingroom, 3, 1)
 
@@ -131,13 +128,13 @@ func GetTempScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 	result := Scene{name: tempSceneName}
 	result.init()
 
-	descBathroom := buttons.NewTextButton("Bad")
+	descBathroom, _ := buttons.NewImageFileButton("images/bathroomTemp.png")
 	result.AddButton(descBathroom, 0, 0)
-	descKitchen := buttons.NewTextButton("Küche")
+	descKitchen, _ := buttons.NewImageFileButton("images/kitchenTemp.png")
 	result.AddButton(descKitchen, 1, 0)
-	descBedroom := buttons.NewTextButton("Schlafzimmer")
+	descBedroom, _ := buttons.NewImageFileButton("images/bedroomTemp.png")
 	result.AddButton(descBedroom, 2, 0)
-	descLivingroom := buttons.NewTextButton("Wohnzimmer")
+	descLivingroom, _ := buttons.NewImageFileButton("images/livingroomTemp.png")
 	result.AddButton(descLivingroom, 3, 0)
 
 	buttonBathroom := buttons.NewTextButton("18°C")
@@ -200,7 +197,7 @@ func GetSettingsScene( sd *streamdeck.StreamDeck, registry *SceneRegistry, shutd
 	buttonBwd.SetActionHandler(&SceneAction{mainSceneName, registry, sd})
 	result.AddButton(buttonBwd, 0, 0)
 
-	buttonSleep := buttons.NewTextButton("Sleep")
+	buttonSleep , _ := buttons.NewImageFileButton("images/sleep.png")
 	thisActionHandler := &actionhandlers.ChainedAction{}
 	thisActionHandler.AddAction(&actionHandler.OpenHabAction{func(){sd.SetBrightness(0)}})
 	thisActionHandler.AddAction(&SceneAction{sleepSceneName, registry, sd})
