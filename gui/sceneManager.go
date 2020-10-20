@@ -24,18 +24,19 @@ func (reg *SceneRegistry) Init( scenes ... *Scene){
 
 type Scene struct {
 	name    string
-	buttons [Cols][Rows]*buttons.TextButton
+	buttons [Cols][Rows]streamdeck.Button
 }
 
 func (scene *Scene) init() {
+	button := GetEmptyButton()
 	for x := 0; x < Cols; x++ {
 		for y := 0; y < Rows; y++ {
-			scene.AddButton(GetEmptyButton(), x, y)
+			scene.AddButton(button, x, y)
 		}
 	}
 }
 
-func (scene *Scene) AddButton(button *buttons.TextButton, x, y int) {
+func (scene *Scene) AddButton(button streamdeck.Button, x, y int) {
 	if x > Cols-1 || y > Rows -1 || x < 0 || y < 0{
 		fmt.Printf("Button index out of bounds (X: 0-%d|Y: 0-%d). Is (%d|%d)", Cols-1, Rows-1, x, y)
 		return
@@ -47,11 +48,13 @@ func (scene *Scene) Write(sd streamdeck.StreamDeck) {
 	sd.SetBrightness(50)
 	for x := 0; x < Cols; x++ {
 		for y := 0; y < Rows; y++ {
-			sd.AddButton(x+y*5, scene.buttons[x][y])
+			if scene.buttons[x][y] != nil {
+				sd.AddButton(x+y*5, scene.buttons[x][y])
+			}
 		}
 	}
 }
 
-func GetEmptyButton() *buttons.TextButton {
+func GetEmptyButton() streamdeck.Button {
 	return buttons.NewTextButton("")
 }
