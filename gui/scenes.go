@@ -4,7 +4,6 @@ import (
 	"github.com/magicmonkey/go-streamdeck"
 	"github.com/magicmonkey/go-streamdeck/actionhandlers"
 	"github.com/magicmonkey/go-streamdeck/buttons"
-	"streamdeckOpenHab/openhab"
 	"streamdeckOpenHab/openhab/actionHandler"
 	"time"
 )
@@ -124,6 +123,7 @@ func GetMainScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 	settingsButton.SetActionHandler(&SceneAction{settingsSceneName, registry, sd})
 	result.AddButton(settingsButton, 3,0)
 
+	/*
 	buttonBedroom, _ := buttons.NewImageFileButton("images/light_bedroom_on.png")
 	buttonBedroom.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.ToggleLight("LightBedRoom_Color")}})
 	result.AddButton(buttonBedroom, 1, 1)
@@ -135,6 +135,28 @@ func GetMainScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 	buttonKitchen, _ := buttons.NewImageFileButton("images/light_kitchen_on.png")
 	buttonKitchen.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.ToggleLight("LightKitchen_Color")}})
 	result.AddButton(buttonKitchen, 3, 2)
+	 */
+
+	lightBedroom := &LightButton{
+		Room:      "bedroom",
+		ItemNames: []string{"LightBedRoom_Color"},
+		sd:        sd,
+	}
+	result.AddButton(lightBedroom.GenerateButton(), 1, 1)
+
+	lightLivingroom := &LightButton{
+		Room:      "livingroom",
+		ItemNames: []string{"LightLivingRoom_Color", "LightPlayLivingroomDoor_Color", "LightPlayLivingroomWindow_Color", "LightstripBedroom_Color"},
+		sd:        sd,
+	}
+	result.AddButton(lightLivingroom.GenerateButton(), 1, 2)
+
+	lightKitchen := &LightButton{
+		Room:      "bedroom",
+		ItemNames: []string{"LightKitchen_Color"},
+		sd:        sd,
+	}
+	result.AddButton(lightKitchen.GenerateButton(), 1, 1)
 
 	buttonFwd := buttons.NewTextButton(">")
 	buttonFwd.SetActionHandler(&SceneAction{tempSceneName, registry, sd})

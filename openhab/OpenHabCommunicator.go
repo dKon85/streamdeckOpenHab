@@ -75,6 +75,37 @@ func ToggleLights( itemNames ... string ){
 	}
 }
 
+func IsLightActive( itemName string ) bool{
+	state := GetLightState(itemName)
+
+	if len(state) != 3 {
+		return false
+	}
+
+	if state[2] == "0" {
+		return false
+	} else {
+		return true
+	}
+}
+
+func SetLightStates( itemNames []string, active bool ){
+
+	if len(itemNames) == 0 {
+		return
+	}
+
+	value := "60"
+
+	if active {
+		value = "0"
+	}
+
+	for _, itemName := range itemNames {
+		changeBrightness( itemName, value )
+	}
+}
+
 func ToggleLight( itemName string ){
 
 	state := GetLightState(itemName)
