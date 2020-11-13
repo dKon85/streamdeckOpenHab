@@ -34,11 +34,11 @@ func (*OpenHabCommunicator) ListItems() (*[]Item, error){
 
 }
 
-func (*OpenHabCommunicator) GetItemState() (string, error){
+func (*OpenHabCommunicator) GetItemState(itemName string) (string, error){
 
 	c := NewClient("")
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/items/XiaomiBedroomHTPSensor_Humidity/state", c.BaseURL), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/items/%s/state", c.BaseURL, itemName), nil)
 	if err != nil {
 		return "", err
 	}
@@ -129,7 +129,7 @@ func SetTemp( targetTemp, itemName string ){
 	c.sendPlainRequest(req)
 }
 
-func SetTemps( targetTemp string, itemNames ... string){
+func SetTemps( targetTemp string, itemNames []string){
 	if len(itemNames) == 0 {
 		return
 	}

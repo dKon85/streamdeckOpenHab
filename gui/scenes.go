@@ -26,9 +26,18 @@ func GetTestScene( sd *streamdeck.StreamDeck, registry *SceneRegistry, stopFunc 
 	button1.SetActionHandler(&actionHandler.OpenHabAction{})
 	result.AddButton( button1, 0,0 )
 
-	button2 := buttons.NewTextButton("2")
+	/*button2 := buttons.NewTextButton("2")
 	button2.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "TWO"})
-	result.AddButton( button2, 1,0)
+	result.AddButton( button2, 1,0)*/
+
+	tempButton := &TempButton{
+		Room:     "bedroom",
+		ItemNames: []string{"HeaterBedroom"},
+		sd: sd,
+		curState: "cold",
+		nextState: "warm",
+	}
+	result.AddButton(tempButton.GenerateButton(), 1, 0)
 
 	button3 := buttons.NewTextButton("3")
 	button3.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "THREE"})
@@ -50,7 +59,7 @@ func GetTestScene( sd *streamdeck.StreamDeck, registry *SceneRegistry, stopFunc 
 	button7.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "SEVEN"})
 	result.AddButton( button7, 1, 1)
 
-	imgTest, _ := buttons.NewImageFileButton("images/bathroomTemp.png")
+	imgTest, _ := buttons.NewImageFileButton("images/light_bedroom_on.png")
 	result.AddButton(imgTest, 2, 1)
 
 	//imgTest.SetActionHandler(&actionhandlers.TextLabelChangeAction{NewLabel: "EIGHT"})
@@ -103,17 +112,18 @@ func GetMainScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 	buttonBwd.SetActionHandler(&SceneAction{testSceneName, registry, sd})
 	result.AddButton(buttonBwd, 0, 0)
 
-	buttonKitchen, _ := buttons.NewImageFileButton("images/kitchenLight.png")
-	buttonKitchen.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.ToggleLight("LightKitchen_Color")}})
-	result.AddButton(buttonKitchen, 1, 1)
 
-	buttonBedroom, _ := buttons.NewImageFileButton("images/bedroomLight.png")
+	buttonBedroom, _ := buttons.NewImageFileButton("images/light_bedroom_on.png")
 	buttonBedroom.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.ToggleLight("LightBedRoom_Color")}})
-	result.AddButton(buttonBedroom, 2, 1)
+	result.AddButton(buttonBedroom, 1, 0)
 
-	buttonLivingroom, _ := buttons.NewImageFileButton("images/livingroomLight.png")
+	buttonLivingroom, _ := buttons.NewImageFileButton("images/light_livingroom_on.png")
 	buttonLivingroom.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.ToggleLights("LightLivingRoom_Color", "LightPlayLivingroomDoor_Color", "LightPlayLivingroomWindow_Color", "LightstripBedroom_Color")}})
-	result.AddButton(buttonLivingroom, 3, 1)
+	result.AddButton(buttonLivingroom, 1, 1)
+
+	buttonKitchen, _ := buttons.NewImageFileButton("images/light_kitchen_on.png")
+	buttonKitchen.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.ToggleLight("LightKitchen_Color")}})
+	result.AddButton(buttonKitchen, 3, 1)
 
 	buttonFwd := buttons.NewTextButton(">")
 	buttonFwd.SetActionHandler(&SceneAction{tempSceneName, registry, sd})
@@ -128,54 +138,49 @@ func GetTempScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 	result := Scene{name: tempSceneName}
 	result.init()
 
-	descBathroom, _ := buttons.NewImageFileButton("images/bathroomTemp.png")
-	result.AddButton(descBathroom, 0, 0)
-	descKitchen, _ := buttons.NewImageFileButton("images/kitchenTemp.png")
-	result.AddButton(descKitchen, 1, 0)
-	descBedroom, _ := buttons.NewImageFileButton("images/bedroomTemp.png")
-	result.AddButton(descBedroom, 2, 0)
-	descLivingroom, _ := buttons.NewImageFileButton("images/livingroomTemp.png")
-	result.AddButton(descLivingroom, 3, 0)
+	bedroomTempButton := &TempButton{
+		Room:     "bedroom",
+		ItemNames: []string{"HeaterBedroom"},
+		sd: sd,
+		curState: "cold",
+		nextState: "warm",
+	}
+	result.AddButton(bedroomTempButton.GenerateButton(), 1, 0)
 
-	buttonBathroom := buttons.NewTextButton("18°C")
-	buttonBathroom.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.SetTemp( "18.00", "HeaterBathroom")}})
-	result.AddButton(buttonBathroom, 0, 1)
+	livingroomTempButton := &TempButton{
+		Room:     "livingroom",
+		ItemNames: []string{"HeaterLivingroomWindow", "HeaterLivingroomDoor"},
+		sd: sd,
+		curState: "cold",
+		nextState: "warm",
+	}
+	result.AddButton(livingroomTempButton.GenerateButton(), 1, 1)
 
-	buttonKitchen := buttons.NewTextButton("18°C")
-	buttonKitchen.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.SetTemp( "18.00", "HeaterKitchen")}})
-	result.AddButton(buttonKitchen, 1, 1)
+	bathroomTempButton := &TempButton{
+		Room:     "bathroom",
+		ItemNames: []string{"HeaterBathroom"},
+		sd: sd,
+		curState: "cold",
+		nextState: "warm",
+	}
+	result.AddButton(bathroomTempButton.GenerateButton(), 2, 1)
 
-	buttonBedroom := buttons.NewTextButton("18°C")
-	buttonBedroom.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.SetTemp( "18.00", "HeaterBedroom")}})
-	result.AddButton(buttonBedroom, 2, 1)
-
-	buttonLivingroom := buttons.NewTextButton("18°C")
-	buttonLivingroom.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.SetTemps( "18.00", "HeaterLivingroomDoor", "HeaterLivingroomWindow")}})
-	result.AddButton(buttonLivingroom, 3, 1)
-
-	buttonBathroomHot := buttons.NewTextButton("21°C")
-	buttonBathroomHot.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.SetTemp( "21.00", "HeaterKitchen")}})
-	result.AddButton(buttonBathroomHot, 0, 2)
-
-	buttonKitchenHot := buttons.NewTextButton("21°C")
-	buttonKitchenHot.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.SetTemp( "21.00", "HeaterKitchen")}})
-	result.AddButton(buttonKitchenHot, 1, 2)
-
-	buttonBedroomHot := buttons.NewTextButton("21°C")
-	buttonBedroomHot.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.SetTemp( "21.00", "HeaterBedroom")}})
-	result.AddButton(buttonBedroomHot, 2, 2)
-
-	buttonLivingroomHot := buttons.NewTextButton("21°C")
-	buttonLivingroomHot.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.SetTemps( "21.00", "HeaterLivingroomDoor", "HeaterLivingroomWindow")}})
-	result.AddButton(buttonLivingroomHot, 3, 2)
+	kitchenTempButton := &TempButton{
+		Room:     "kitchen",
+		ItemNames: []string{"HeaterKitchen"},
+		sd: sd,
+		curState: "cold",
+		nextState: "warm",
+	}
+	result.AddButton(kitchenTempButton.GenerateButton(), 3, 1)
 
 	buttonFwd := buttons.NewTextButton(">")
 	buttonFwd.SetActionHandler(&SceneAction{settingsSceneName, registry, sd})
 	result.AddButton(buttonFwd, 4, 0)
 
 	buttonBwd := buttons.NewTextButton("<")
-	buttonBwd.SetActionHandler(&SceneAction{testSceneName, registry, sd})
-	result.AddButton(buttonBwd, 4, 2)
+	buttonBwd.SetActionHandler(&SceneAction{mainSceneName, registry, sd})
+	result.AddButton(buttonBwd, 0, 0)
 
 	return &result
 }
