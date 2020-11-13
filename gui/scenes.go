@@ -112,18 +112,29 @@ func GetMainScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 	buttonBwd.SetActionHandler(&SceneAction{testSceneName, registry, sd})
 	result.AddButton(buttonBwd, 0, 0)
 
+	lightButton, _ := buttons.NewImageFileButton("images/light.png")
+	lightButton.SetActionHandler(&SceneAction{mainSceneName, registry, sd})
+	result.AddButton(lightButton, 1,0)
+
+	tempButton, _ := buttons.NewImageFileButton("images/temp_dark.png")
+	tempButton.SetActionHandler(&SceneAction{tempSceneName, registry, sd})
+	result.AddButton(tempButton, 2,0)
+
+	settingsButton, _ := buttons.NewImageFileButton("images/settings_dark.png")
+	settingsButton.SetActionHandler(&SceneAction{settingsSceneName, registry, sd})
+	result.AddButton(settingsButton, 3,0)
 
 	buttonBedroom, _ := buttons.NewImageFileButton("images/light_bedroom_on.png")
 	buttonBedroom.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.ToggleLight("LightBedRoom_Color")}})
-	result.AddButton(buttonBedroom, 1, 0)
+	result.AddButton(buttonBedroom, 1, 1)
 
 	buttonLivingroom, _ := buttons.NewImageFileButton("images/light_livingroom_on.png")
 	buttonLivingroom.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.ToggleLights("LightLivingRoom_Color", "LightPlayLivingroomDoor_Color", "LightPlayLivingroomWindow_Color", "LightstripBedroom_Color")}})
-	result.AddButton(buttonLivingroom, 1, 1)
+	result.AddButton(buttonLivingroom, 1, 2)
 
 	buttonKitchen, _ := buttons.NewImageFileButton("images/light_kitchen_on.png")
 	buttonKitchen.SetActionHandler(&actionHandler.OpenHabAction{ func(){openhab.ToggleLight("LightKitchen_Color")}})
-	result.AddButton(buttonKitchen, 3, 1)
+	result.AddButton(buttonKitchen, 3, 2)
 
 	buttonFwd := buttons.NewTextButton(">")
 	buttonFwd.SetActionHandler(&SceneAction{tempSceneName, registry, sd})
@@ -138,6 +149,19 @@ func GetTempScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 	result := Scene{name: tempSceneName}
 	result.init()
 
+
+	lightButton, _ := buttons.NewImageFileButton("images/light_dark.png")
+	lightButton.SetActionHandler(&SceneAction{mainSceneName, registry, sd})
+	result.AddButton(lightButton, 1,0)
+
+	tempButton, _ := buttons.NewImageFileButton("images/temp.png")
+	tempButton.SetActionHandler(&SceneAction{tempSceneName, registry, sd})
+	result.AddButton(tempButton, 2,0)
+
+	settingsButton, _ := buttons.NewImageFileButton("images/settings_dark.png")
+	settingsButton.SetActionHandler(&SceneAction{settingsSceneName, registry, sd})
+	result.AddButton(settingsButton, 3,0)
+
 	bedroomTempButton := &TempButton{
 		Room:     "bedroom",
 		ItemNames: []string{"HeaterBedroom"},
@@ -145,7 +169,7 @@ func GetTempScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 		curState: "cold",
 		nextState: "warm",
 	}
-	result.AddButton(bedroomTempButton.GenerateButton(), 1, 0)
+	result.AddButton(bedroomTempButton.GenerateButton(), 1, 1)
 
 	livingroomTempButton := &TempButton{
 		Room:     "livingroom",
@@ -154,7 +178,7 @@ func GetTempScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 		curState: "cold",
 		nextState: "warm",
 	}
-	result.AddButton(livingroomTempButton.GenerateButton(), 1, 1)
+	result.AddButton(livingroomTempButton.GenerateButton(), 1, 2)
 
 	bathroomTempButton := &TempButton{
 		Room:     "bathroom",
@@ -163,7 +187,7 @@ func GetTempScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 		curState: "cold",
 		nextState: "warm",
 	}
-	result.AddButton(bathroomTempButton.GenerateButton(), 2, 1)
+	result.AddButton(bathroomTempButton.GenerateButton(), 2, 2)
 
 	kitchenTempButton := &TempButton{
 		Room:     "kitchen",
@@ -172,7 +196,7 @@ func GetTempScene( sd *streamdeck.StreamDeck, registry *SceneRegistry) (*Scene) 
 		curState: "cold",
 		nextState: "warm",
 	}
-	result.AddButton(kitchenTempButton.GenerateButton(), 3, 1)
+	result.AddButton(kitchenTempButton.GenerateButton(), 3, 2)
 
 	buttonFwd := buttons.NewTextButton(">")
 	buttonFwd.SetActionHandler(&SceneAction{settingsSceneName, registry, sd})
@@ -199,8 +223,22 @@ func GetSettingsScene( sd *streamdeck.StreamDeck, registry *SceneRegistry, shutd
 	result.init()
 
 	buttonBwd := buttons.NewTextButton("<")
-	buttonBwd.SetActionHandler(&SceneAction{mainSceneName, registry, sd})
+	buttonBwd.SetActionHandler(&SceneAction{tempSceneName, registry, sd})
 	result.AddButton(buttonBwd, 0, 0)
+
+
+	lightButton, _ := buttons.NewImageFileButton("images/light_dark.png")
+	lightButton.SetActionHandler(&SceneAction{mainSceneName, registry, sd})
+	result.AddButton(lightButton, 1,0)
+
+	tempButton, _ := buttons.NewImageFileButton("images/temp_dark.png")
+	tempButton.SetActionHandler(&SceneAction{tempSceneName, registry, sd})
+	result.AddButton(tempButton, 2,0)
+
+	settingsButton, _ := buttons.NewImageFileButton("images/settings.png")
+	settingsButton.SetActionHandler(&SceneAction{settingsSceneName, registry, sd})
+	result.AddButton(settingsButton, 3,0)
+
 
 	buttonSleep , _ := buttons.NewImageFileButton("images/sleep.png")
 	thisActionHandler := &actionhandlers.ChainedAction{}
