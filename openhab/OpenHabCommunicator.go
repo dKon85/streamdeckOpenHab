@@ -15,15 +15,10 @@ func (*OpenHabCommunicator) ListItems() (*[]Item, error){
 
 	c := NewClient("")
 
-	//ctx := context.Background()
-
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/items", c.BaseURL), nil)
 	if err != nil {
 		return nil, err
 	}
-
-	//req = req.WithContext(ctx)
-
 
 	res := [] Item{}
 	if err := c.sendRequest(req, &res); err != nil {
@@ -52,28 +47,6 @@ func (*OpenHabCommunicator) GetItemState(itemName string) (string, error){
 	return res, nil
 
 }
-func ToggleLights( itemNames ... string ){
-
-	if len(itemNames) == 0 {
-		return
-	}
-
-	state := GetLightState(itemNames[0])
-
-	if len(state) != 3 {
-		return
-	}
-
-	value := "0"
-
-	if state[2] == "0" {
-		value = "60"
-	}
-
-	for _, itemName := range itemNames {
-		changeBrightness( itemName, value )
-	}
-}
 
 func IsLightActive( itemName string ) bool{
 	state := GetLightState(itemName)
@@ -89,39 +62,21 @@ func IsLightActive( itemName string ) bool{
 	}
 }
 
-func SetLightStates( itemNames []string, active bool ){
+func SetLightStates( itemNames []string, activate bool ){
 
 	if len(itemNames) == 0 {
 		return
 	}
 
-	value := "60"
+	value := "0"
 
-	if active {
-		value = "0"
+	if activate {
+		value = "60"
 	}
 
 	for _, itemName := range itemNames {
 		changeBrightness( itemName, value )
 	}
-}
-
-func ToggleLight( itemName string ){
-
-	state := GetLightState(itemName)
-
-	if len(state) != 3 {
-		return
-	}
-
-	value := "0"
-
-	if state[2] == "0" {
-		value = "60"
-	}
-
-	changeBrightness(itemName, value)
-
 }
 
 func changeBrightness(itemName string, value string) {

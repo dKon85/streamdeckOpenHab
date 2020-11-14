@@ -23,15 +23,6 @@ func (receiver TempButton) GenerateButton() *buttons.ImageFileButton {
 		receiver.nextState = "warm"
 	}
 
-	/*switch receiver.curState {
-	case "warm":
-		receiver.nextState = "cold"
-	case "cold":
-		receiver.nextState = "warm"
-	default:
-		receiver.nextState = "warm"
-	}*/
-
 	path := fmt.Sprintf("%s/%s_%s_%s.png", FileBasePath, receiver.Room, receiver.curState, receiver.nextState)
 	btn, _ := buttons.NewImageFileButton(path)
 	handler := actionhandlers.CustomAction{}
@@ -70,9 +61,11 @@ type LightButton struct {
 	active    bool
 }
 
-func (receiver LightButton) GenerateButton() *buttons.ImageFileButton {
-
+func (receiver LightButton) Init(){
 	receiver.active = openhab.IsLightActive(receiver.ItemNames[0])
+}
+
+func (receiver LightButton) GenerateButton() *buttons.ImageFileButton {
 
 	postfix := "off"
 	if receiver.active {
