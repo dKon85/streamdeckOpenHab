@@ -35,15 +35,15 @@ func (receiver TempButton) Pressed(btn streamdeck.Button) {
 
 	switch receiver.nextState {
 	case "warm":
-		openhab.SetTemps("21.00", receiver.ItemNames)
+		openhab.SetTemps(fmt.Sprintf("%.2f", openhab.TempWarmLimit), receiver.ItemNames)
 		receiver.nextState = "cold"
 		receiver.curState = "warm"
 	case "cold":
-		openhab.SetTemps("18.00", receiver.ItemNames)
+		openhab.SetTemps(fmt.Sprintf("%.2f", openhab.TempColdLimit), receiver.ItemNames)
 		receiver.nextState = "warm"
 		receiver.curState = "cold"
 	default:
-		openhab.SetTemps("21.00", receiver.ItemNames)
+		openhab.SetTemps(fmt.Sprintf("%.2f", openhab.TempWarmLimit), receiver.ItemNames)
 		receiver.nextState = "cold"
 		receiver.curState = "off"
 	}
@@ -59,10 +59,6 @@ type LightButton struct {
 	ItemNames []string
 	sd        *streamdeck.StreamDeck
 	active    bool
-}
-
-func (receiver LightButton) Init(){
-	receiver.active = openhab.IsLightActive(receiver.ItemNames[0])
 }
 
 func (receiver LightButton) GenerateButton() *buttons.ImageFileButton {

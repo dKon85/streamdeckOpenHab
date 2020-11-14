@@ -29,7 +29,16 @@ func (*OpenHabCommunicator) ListItems() (*[]Item, error){
 
 }
 
-func (*OpenHabCommunicator) GetItemState(itemName string) (string, error){
+func GetItemStateWithDefault(itemName, defaultValue string) (string){
+	state, err := GetItemState(itemName)
+
+	if err != nil {
+		return defaultValue
+	}
+	return state
+}
+
+func GetItemState(itemName string) (string, error){
 
 	c := NewClient("")
 

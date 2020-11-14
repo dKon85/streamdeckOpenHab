@@ -162,39 +162,43 @@ func GetTempScene(sd *streamdeck.StreamDeck, registry *SceneRegistry) *Scene {
 	settingsButton.SetActionHandler(&SceneAction{settingsSceneName, registry, sd})
 	result.AddButton(settingsButton, 3, 0)
 
+	bedroomTempState := openhab.TempToName(openhab.ConvertTemperatureToFloat(openhab.GetItemStateWithDefault("HeaterBedroom", "0.0")))
 	bedroomTempButton := &TempButton{
 		Room:      "bedroom",
 		ItemNames: []string{"HeaterBedroom"},
 		sd:        sd,
-		curState:  "cold",
-		nextState: "warm",
+		curState:  bedroomTempState,
+		nextState: openhab.DetermineNextTempState(bedroomTempState),
 	}
 	result.AddButton(bedroomTempButton.GenerateButton(), 1, 1)
 
+	livingroomTempState := openhab.TempToName(openhab.ConvertTemperatureToFloat(openhab.GetItemStateWithDefault("HeaterLivingroomWindow", "0.0")))
 	livingroomTempButton := &TempButton{
 		Room:      "livingroom",
 		ItemNames: []string{"HeaterLivingroomWindow", "HeaterLivingroomDoor"},
 		sd:        sd,
-		curState:  "cold",
-		nextState: "warm",
+		curState:  livingroomTempState,
+		nextState: openhab.DetermineNextTempState(livingroomTempState),
 	}
 	result.AddButton(livingroomTempButton.GenerateButton(), 1, 2)
 
+	bathroomTempState := openhab.TempToName(openhab.ConvertTemperatureToFloat(openhab.GetItemStateWithDefault("HeaterBathroom", "0.0")))
 	bathroomTempButton := &TempButton{
 		Room:      "bathroom",
 		ItemNames: []string{"HeaterBathroom"},
 		sd:        sd,
-		curState:  "cold",
-		nextState: "warm",
+		curState:  bathroomTempState,
+		nextState: openhab.DetermineNextTempState(bathroomTempState),
 	}
 	result.AddButton(bathroomTempButton.GenerateButton(), 2, 2)
 
+	kitchenTempState := openhab.TempToName(openhab.ConvertTemperatureToFloat(openhab.GetItemStateWithDefault("HeaterKitchen", "0.0")))
 	kitchenTempButton := &TempButton{
 		Room:      "kitchen",
 		ItemNames: []string{"HeaterKitchen"},
 		sd:        sd,
-		curState:  "cold",
-		nextState: "warm",
+		curState:  kitchenTempState,
+		nextState: openhab.DetermineNextTempState(kitchenTempState),
 	}
 	result.AddButton(kitchenTempButton.GenerateButton(), 3, 2)
 
